@@ -37,6 +37,8 @@ def load_data ():
     images = np.array(images)
 
     images = images / 255
+    
+    images = np.float32(images)
 
     x_train, x_test = train_test_split(images, test_size = 0.1)
 
