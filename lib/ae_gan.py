@@ -1,13 +1,18 @@
 import tensorflow as tf
 
 class Autoencoder():
-    def __init__(self, autoencoder_object, discriminator_object):
+    def __init__(self, autoencoder_object, discriminator_object, Lambda):
         self.AE = autoencoder_object
         self.Disc = discriminator_object
+        self.Lambda = Lambda
 
     def train_step_AE(self, batch):
         with tf.GradientTape() as tape:
-            loss = self.AE.loss(batch, self.AE.autoencode(batch))
+            x_true = batch
+            x_pred = self.AE.autoencode(batch)
+            disc_pred = self.Disc.discriminate(x_pred)
+            loss = self.Lambda*self.AE.loss(batch, x_pred) + self.Disc.loss(tf.ones(tf.shape(disc_pred)), disc_pred)
+            
         gradients = tape.gradient(loss, self.AE.Model.trainable_variables)
         self.AE.Optimizer.apply_gradients(zip(gradients, self.AE.Model.trainable_variables))
         return loss
