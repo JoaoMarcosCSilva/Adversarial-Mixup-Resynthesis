@@ -56,3 +56,6 @@ def augment_data (data, multiplier):
         break
     
     return augmented_data
+
+def get_tf_data(data, batch_size = 32, shuffle_size = 100):
+    return tf.data.Dataset.from_tensor_slices(data).shuffle(shuffle_size).batch(batch_size)
