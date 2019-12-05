@@ -33,14 +33,14 @@ class Autoencoder():
         self.Disc.Optimizer.apply_gradients(zip(gradients, self.Disc.Discriminator.trainable_variables))
         return loss, gradients, loss_real, loss_fake
     
-    def train(self, epochs, dataset, verbose = True, wandb_run = None):
+    def train(self, epochs, dataset, verbose = True, wandb_run = False):
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
             for batch in dataset:
                 loss_ae, gradients_ae, loss_reconstruction_ae, loss_discrimination_ae = self.train_step_AE(batch)
                 loss_disc, gradients_disc, loss_real_disc, loss_fake_disc = self.train_step_Disc(batch)
-                if wandb_run != None:
+                if wandb_run:
                     wandb.log({'Epoch': epoch}, commit = False)
                     wandb.log({'Autoencoder Loss': loss_ae, 
                         'Autoencoder Mean Gradient': gradients_ae, 
@@ -49,5 +49,6 @@ class Autoencoder():
                     wandb.log({'Discriminator Loss': loss_disc, 
                         'Discriminator Mean Gradient': gradients_disc, 
                         'Autoencoder Reconstruction Loss': loss_real_disc,
-                        'Autoencoder Discrimination Loss': loss_fake_disc}, commit = False)
-                
+                        'Autoencoder Discrimination Loss': loss_fake_disc})
+                if verbose == 1:
+                    ...
