@@ -1,5 +1,6 @@
 import tensorflow as tf
 import wandb
+import numpy as np
 
 class Autoencoder():
     def __init__(self, autoencoder_object, discriminator_object, Lambda):

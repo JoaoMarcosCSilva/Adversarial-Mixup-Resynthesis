@@ -2,7 +2,6 @@ from tensorflow import keras
 from tensorflow.keras.layers import Conv2D, Input, BatchNormalization, Flatten, Dense, MaxPooling2D, UpSampling2D
 import tensorflow as tf
 from lib import losses
-import numpy as np
 
 class Autoencoder_Object():
     def __init__(self, Layers, Hidden_Channels, Starting_Channels, lr = 0.001):
