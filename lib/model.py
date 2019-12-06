@@ -38,6 +38,8 @@ def get_Encoder(Layers, Hidden_Channels, Starting_Channels):
     for l in range(Layers-1):
         x = Conv2D(channels, 3, activation = 'relu', padding = 'same')(x)
         x = BatchNormalization()(x)
+        x = Conv2D(channels, 3, activation = 'relu', padding = 'same')(x)
+        x = BatchNormalization()(x)
         x = MaxPooling2D()(x)
 
         channels = int(channels / 2)
@@ -63,6 +65,8 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels):
         channels = channels * 2
 
         x = UpSampling2D()(x)
+        x = Conv2D(channels, 3, activation = 'relu', padding = 'same')(x)
+        x = BatchNormalization()(x)
         x = Conv2D(channels, 3, activation = 'relu', padding = 'same')(x)
         x = BatchNormalization()(x)
 
