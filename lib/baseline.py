@@ -6,7 +6,7 @@ class Autoencoder():
     def __init__(self, autoencoder_object):
         self.AE = autoencoder_object
         
-
+    @tf.function
     def train_step_AE(self, batch):
         with tf.GradientTape() as tape:
             loss = self.AE.loss(batch, self.AE.autoencode(batch))

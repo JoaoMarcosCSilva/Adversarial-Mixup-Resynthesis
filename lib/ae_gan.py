@@ -8,6 +8,7 @@ class Autoencoder():
         self.Disc = discriminator_object
         self.Lambda = Lambda
 
+    @tf.function
     def train_step_AE(self, batch):
         with tf.GradientTape() as tape:
             x_true = batch
@@ -21,6 +22,7 @@ class Autoencoder():
         self.AE.Optimizer.apply_gradients(zip(gradients, self.AE.Model.trainable_variables))
         return loss.numpy(), np.array(gradients), loss_reconstruction.numpy(), loss_discrimination.numpy()
 
+    @tf.function
     def train_step_Disc(self, batch):
         with tf.GradientTape() as tape:
             disc_pred_real = self.Disc.discriminate(batch)
