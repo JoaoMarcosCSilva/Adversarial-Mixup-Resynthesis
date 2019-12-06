@@ -36,27 +36,30 @@ class Autoencoder():
         self.Disc.Optimizer.apply_gradients(zip(gradients, self.Disc.Discriminator.trainable_variables))
         return loss, gradients, loss_real, loss_fake
     
-    def train(self, epochs, dataset, verbose = True, wandb_run = False, wandb_every = 1):
+    def train(self, epochs, dataset, verbose = True, wandb_run = False, wandb_every = 1, disc_every = 1):
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
             j = 0
             for batch in dataset:
                 loss_ae, gradients_ae, loss_reconstruction_ae, loss_discrimination_ae = self.train_step_AE(batch)
-                loss_disc, gradients_disc, loss_real_disc, loss_fake_disc = self.train_step_Disc(batch)
+                
+                if j % disc_every == 0:
+                    loss_disc, gradients_disc, loss_real_disc, loss_fake_disc = self.train_step_Disc(batch)
                 
                 if wandb_run:
                     if j % wandb_every == 0:
-                        wandb.log({'Epoch': epoch}, commit = False)
                         wandb.log({'Autoencoder Loss': loss_ae.numpy(), 
                             'Autoencoder Mean Gradient': np.mean([np.mean(i.numpy()) for i in gradients_ae]), 
                             'Autoencoder Reconstruction Loss': loss_reconstruction_ae.numpy(),
                             'Autoencoder Discrimination Loss': loss_discrimination_ae.numpy()}, commit = False)
-                
+                        
                         wandb.log({'Discriminator Loss': loss_disc.numpy(), 
                             'Discriminator Mean Gradient': np.mean([np.mean(i.numpy()) for i in gradients_disc]),
                             'Discriminator Real Loss': loss_real_disc.numpy(),
-                            'Discriminator Fake Loss': loss_fake_disc.numpy()})
+                            'Discriminator Fake Loss': loss_fake_disc.numpy()}, commit = False)
+
+                        wandb.log({'Epoch': epoch})
                     j += 1
                 if verbose == 1:
                     ...
