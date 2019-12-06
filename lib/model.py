@@ -87,6 +87,7 @@ def get_Discriminator(Layers, Starting_Channels):
     x = inputs
     for l in range(Layers-2):
         x = Conv2D(Starting_Channels*(2**l), 3, activation = 'relu', padding = 'same')(x)
+        x = BatchNormalization()(x)
         x = MaxPooling2D()(x)
     x = Flatten()(x)
     x = Dense(10,activation='relu')(x)
