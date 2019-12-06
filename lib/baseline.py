@@ -12,18 +12,18 @@ class Autoencoder():
             loss = self.AE.loss(batch, self.AE.autoencode(batch))
         gradients = tape.gradient(loss, self.AE.Model.trainable_variables)
         self.AE.Optimizer.apply_gradients(zip(gradients, self.AE.Model.trainable_variables))
-        return loss.numpy(), np.array(gradients)
+        return loss, gradients
 
     def train(self, epochs, dataset, verbose = True, wandb_run = False, wandb_every = 1):
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
-            i = 0
+            j = 0
             for batch in dataset:
                 loss, gradients = self.train_step_AE(batch)
                 if wandb_run:
-                    if i % wandb_every == 0:
+                    if j % wandb_every == 0:
                         wandb.log({'Epoch': epoch}, commit = False)
-                        wandb.log({'Autoencoder Loss': loss, 
-                            'Autoencoder Mean Gradient': np.mean([np.mean(i) for i in gradients])})
-                    i += 1
+                        wandb.log({'Autoencoder Loss': loss.numpy(), 
+                            'Autoencoder Mean Gradient': np.mean([np.mean(i.numpy()) for i in gradients])})
+                    j += 1
