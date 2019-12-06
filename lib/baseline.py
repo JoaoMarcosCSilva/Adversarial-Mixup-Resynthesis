@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 class Autoencoder():
     def __init__(self, autoencoder_object):
