@@ -18,14 +18,14 @@ class Autoencoder_Object():
     def loss(self,y_true, y_pred):
         return losses.reconstruction_loss(y_true, y_pred)
     
-    def evaluate(self, dataset)
+    def evaluate(self, dataset):
         l = 0
         i = 0
         for batch in dataset:
             l += self.loss(batch, autoencode(batch))
             i += 1
         return l/i
-        
+
 class Discriminator_Object():
     def __init__(self,Layers, Starting_Channels, lr = 0.001):
         self.Discriminator = get_Discriminator(Layers, Starting_Channels)
