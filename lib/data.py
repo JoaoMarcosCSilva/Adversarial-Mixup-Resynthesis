@@ -40,7 +40,7 @@ def load_data ():
     
     images = np.float32(images)
 
-    x_train, x_test = train_test_split(images, test_size = 0.1)
+    x_train, x_test = train_test_split(images, test_size = 0.1, random_state = 1)
 
     return x_train, x_test
 
