@@ -24,6 +24,6 @@ class Autoencoder():
                 if wandb_run:
                     if j % wandb_every == 0:
                         wandb.log({'Epoch': epoch}, commit = False)
-                        wandb.log({'Autoencoder Loss': loss.numpy(), 
+                        wandb.log({'Autoencoder Reconstruction Loss': loss.numpy(), 
                             'Autoencoder Mean Gradient': np.mean([np.mean(i.numpy()) for i in gradients])})
                     j += 1
