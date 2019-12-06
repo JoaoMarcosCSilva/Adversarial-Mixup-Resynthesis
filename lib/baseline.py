@@ -20,7 +20,7 @@ class Autoencoder():
                 print('Epoch:',epoch+1)
             for batch in dataset:
                 loss, gradients = self.train_step_AE(batch)
-            if wandb_run:
-                wandb.log({'Epoch': epoch}, commit = False)
-                wandb.log({'Autoencoder Loss': loss, 
-                    'Autoencoder Mean Gradient': np.mean([np.mean(i) for i in gradients])})
+                if wandb_run:
+                    wandb.log({'Epoch': epoch}, commit = False)
+                    wandb.log({'Autoencoder Loss': loss, 
+                        'Autoencoder Mean Gradient': np.mean([np.mean(i) for i in gradients])})
