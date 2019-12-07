@@ -40,15 +40,15 @@ class Autoencoder():
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
-            j = 0
-            for batch in dataset:
+            
+            for step, batch in enumerate(dataset):
                 loss_ae, gradients_ae, loss_reconstruction_ae, loss_discrimination_ae = self.train_step_AE(batch)
                 
-                if j % disc_every == 0:
+                if step % disc_every == 0:
                     loss_disc, gradients_disc, loss_real_disc, loss_fake_disc = self.train_step_Disc(batch)
                 
                 if wandb_run:
-                    if j % wandb_every == 0:
+                    if step % wandb_every == 0:
                         wandb.log({'Autoencoder Loss': loss_ae.numpy(), 
                             'Autoencoder Mean Gradient': np.mean([np.mean(i.numpy()) for i in gradients_ae]), 
                             'Autoencoder Reconstruction Loss': loss_reconstruction_ae.numpy(),
@@ -60,6 +60,5 @@ class Autoencoder():
                             'Discriminator Fake Loss': loss_fake_disc.numpy()}, commit = False)
 
                         wandb.log({'Epoch': epoch})
-                    j += 1
                 if verbose == 1:
                     ...

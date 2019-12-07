@@ -18,12 +18,11 @@ class Autoencoder():
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
-            j = 0
-            for batch in dataset:
+            
+            for step,batch in enumerate(dataset):
                 loss, gradients = self.train_step_AE(batch)
                 if wandb_run:
-                    if j % wandb_every == 0:
+                    if step % wandb_every == 0:
                         wandb.log({'Epoch': epoch}, commit = False)
                         wandb.log({'Autoencoder Reconstruction Loss': loss.numpy(), 
                             'Autoencoder Mean Gradient': np.mean([np.mean(i.numpy()) for i in gradients])})
-                    j += 1

@@ -20,11 +20,9 @@ class Autoencoder_Object():
     
     def evaluate(self, dataset):
         l = 0
-        i = 0
-        for batch in dataset:
+        for step, batch in enumerate(dataset):
             l += self.loss(batch, autoencode(batch))
-            i += 1
-        return l/i
+        return l/(step+1)
 
 class Discriminator_Object():
     def __init__(self,Layers, Starting_Channels, lr = 0.001):
