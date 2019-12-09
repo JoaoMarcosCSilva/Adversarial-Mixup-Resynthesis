@@ -3,7 +3,8 @@ import numpy as np
 from tensorflow import keras
 import wandb
 
-from lib import losses
+from lib import losses, visualize
+
 class Autoencoder():
     def __init__(self, Encoder, Decoder, Discriminator = None, Autoencoder_Optimizer = None, Discriminator_Optimizer = None):
         self.Encoder = Encoder
