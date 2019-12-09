@@ -4,6 +4,7 @@ from tensorflow import keras
 import wandb
 
 from lib import losses, visualize
+import matplotlib.pyplot as plt
 
 class Autoencoder():
     def __init__(self, Encoder, Decoder, Discriminator = None, Autoencoder_Optimizer = None, Discriminator_Optimizer = None):
