@@ -72,7 +72,7 @@ class Autoencoder():
                 metrics_dict = {'Autoencoder Reconstruction Loss':autoencoder_loss.numpy(),
                                 'Autoencoder Mean Gradient':np.mean([np.mean(i.numpy()) for i in autoencoder_gradients])}
                 if log_wandb:
-                    wandb_step(metrics_dict, epoch)
+                    self.wandb_step(metrics_dict, epoch)
                 
                 if verbose:
                     self.progress_bar_step(progress_bar, step, metrics_dict)

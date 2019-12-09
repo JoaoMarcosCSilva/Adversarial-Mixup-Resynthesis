@@ -60,7 +60,7 @@ class Autoencoder(baseline.Autoencoder):
 
                 if log_wandb:
                     if step % wandb_every == 0:
-                        wandb_step(metrics_dict, epoch)
+                        self.wandb_step(metrics_dict, epoch)
 
                 if verbose == 1:
                     self.progress_bar_step(progress_bar, step, metrics_dict, ['Autoencoder Loss','Discriminator Loss', 'Autoencoder Reconstruction Loss'])
