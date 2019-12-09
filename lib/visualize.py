@@ -2,7 +2,12 @@ import numpy as np
 from lib.mixup import interpolate
 import matplotlib.pyplot as plt
 
-def get_output_image(Autoencoder, rows, columns, data, seed = -1):
+def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True):
+  if plot:
+    plt.ion()
+  ekse:
+    plt.ioff()
+    
   if seed != -1:
     np.random.seed(seed)
   

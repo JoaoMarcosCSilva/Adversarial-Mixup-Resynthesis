@@ -42,11 +42,14 @@ class Autoencoder():
         # The base autoencoder's does not have a discriminator, so this function does nothing
         return 
     
-    def wandb_step(self, metrics_dict, epoch = None):
-        if epoch == None:
-            wandb.log(metrics_dict)
-        else:
-            wandb.log({**{'Epoch':epoch+1}, **metrics_dict})
+    def wandb_step(self, metrics_dict, epoch = None, plot = True):
+        output_dict = {}
+        if epoch != None:
+            output_dict['Epoch'] = epoch+1
+        if plot == True:
+            output_dict['Plot'] = plt
+        
+        wandb.log({**output_dict, **metrics_dict})
     
     def get_progress_bar(self, dataset):
         return keras.utils.Progbar(int(tf.data.experimental.cardinality(dataset)) - 1)
