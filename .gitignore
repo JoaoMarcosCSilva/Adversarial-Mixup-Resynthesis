@@ -7,3 +7,5 @@ lib/__pycache__/model.cpython-36.pyc
 lib/model.py
 script.ipynb
 lib/__pycache__/baseline.cpython-36.pyc
+lib/__pycache__/mixup.cpython-36.pyc
+lib/__pycache__/visualize.cpython-36.pyc
