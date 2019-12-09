@@ -42,11 +42,11 @@ class Autoencoder():
         # The base autoencoder's does not have a discriminator, so this function does nothing
         return 
     
-    def wandb_step(self, metrics_dict, epoch = None, plot_data = None, seed = 1):
+    def wandb_step(self, metrics_dict, epoch = None, plot = False, plot_data = None, seed = 1):
         output_dict = {}
         if epoch != None:
             output_dict['Epoch'] = epoch+1
-        if plot_data != None:
+        if plot:
             visualize.get_output_image(self, 5, 5, plot_data, seed)
             output_dict['Plot'] = plt
         
@@ -75,7 +75,7 @@ class Autoencoder():
                 metrics_dict = {'Autoencoder Reconstruction Loss':autoencoder_loss.numpy(),
                                 'Autoencoder Mean Gradient':np.mean([np.mean(i.numpy()) for i in autoencoder_gradients])}
                 if log_wandb:
-                    self.wandb_step(metrics_dict, epoch, plot_data)
+                    self.wandb_step(metrics_dict, epoch, plot = True, plot_data = plot_data)
                 
                 if verbose:
                     self.progress_bar_step(progress_bar, step, metrics_dict)
