@@ -6,7 +6,7 @@ from lib import losses
 class Autoencoder_Object():
     def __init__(self, Layers, Hidden_Channels, Starting_Channels, lr = 0.001):
         self.Encoder, self.Decoder, self.Model = get_Model(Layers, Hidden_Channels, Starting_Channels)
-        self.Optimizer = keras.optimizers.Adam(lr)
+        self.Optimizedr = keras.optimizers.Adam(lr)
 
     def encode(self,x):
         return self.Encoder(x)

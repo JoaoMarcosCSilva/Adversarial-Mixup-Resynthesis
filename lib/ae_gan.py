@@ -2,14 +2,13 @@ import tensorflow as tf
 import wandb
 import numpy as np
 
-class Autoencoder():
-    def __init__(self, autoencoder_object, discriminator_object, Lambda):
-        self.AE = autoencoder_object
-        self.Disc = discriminator_object
+class Autoencoder(Base):
+    def __init__(self, Encoder, Decoder, Discriminator, Autoencoder_Optimizer = None, Discriminator_Optimizer = None, Lambda):
+        super().__init__(Encoder, Decoder, Discriminator, Autoencoder_Optimizer, Discriminator_Optimizer)
         self.Lambda = Lambda
 
     @tf.function
-    def train_step_AE(self, batch):
+    def autoencoder_train_step(self, batch):
         with tf.GradientTape() as tape:
             x_true = batch
             x_pred = self.AE.autoencode(batch)
@@ -23,7 +22,7 @@ class Autoencoder():
         return loss, gradients, loss_reconstruction, loss_discrimination
 
     @tf.function
-    def train_step_Disc(self, batch):
+    def discriminator_train_step(self, batch):
         with tf.GradientTape() as tape:
             disc_pred_real = self.Disc.discriminate(batch)
             disc_pred_fake = self.Disc.discriminate(self.AE.autoencode(batch))
@@ -36,7 +35,7 @@ class Autoencoder():
         self.Disc.Optimizer.apply_gradients(zip(gradients, self.Disc.Discriminator.trainable_variables))
         return loss, gradients, loss_real, loss_fake
     
-    def train(self, epochs, dataset, verbose = True, wandb_run = False, wandb_every = 1, disc_every = 1):
+    def train(self, epochs, dataset, verbose = 1, log_wandb = 0, wandb_every = 1, disc_every = 1):
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
