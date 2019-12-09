@@ -37,8 +37,6 @@ class Autoencoder(baseline.Autoencoder):
         return loss, gradients, loss_real, loss_fake
     
     def train(self, epochs, dataset, verbose = 1, log_wandb = 0, wandb_every = 1, disc_every = 1):
-        if log_wandb:
-            import wandb
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)

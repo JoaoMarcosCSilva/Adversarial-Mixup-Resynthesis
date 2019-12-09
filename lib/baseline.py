@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from tensorflow import keras
+import wandb
 
 from lib import losses
 class Autoencoder():
@@ -58,8 +59,6 @@ class Autoencoder():
             
     
     def train(self, epochs, dataset, verbose = 1, log_wandb = 0):
-        if log_wandb:
-            import wandb
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
