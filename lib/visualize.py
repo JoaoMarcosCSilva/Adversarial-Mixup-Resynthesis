@@ -35,7 +35,7 @@ def get_wandb_plot(Autoencoder, rows, columns, dataset, seed = -1):
                     ax[row][column].set_title(Autoencoder.Discriminator.predict(images_2[row:row+1]))
                 ax[row][column].imshow(images_2[row])
             else:
-                alpha = column/(columns+1)                
+                alpha = (column-1)/(columns-3)                
                 code = interpolate(codes_1[row:row+1], codes_2[row:row+1], alpha)
                 image = Autoencoder.Decoder.predict(code)
                 if add_title:
