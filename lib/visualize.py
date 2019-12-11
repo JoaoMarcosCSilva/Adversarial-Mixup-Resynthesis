@@ -16,7 +16,7 @@ def get_wandb_plot(Autoencoder, rows, columns, dataset, seed = -1):
     
     add_title = Autoencoder.Discriminator is not None
     
-    images = dataset[np.random.choice(range(len(data)), size = rows*2, replace = False)]  
+    images = dataset[np.random.choice(range(len(dataset)), size = rows*2, replace = False)]  
     codes = Autoencoder.Encoder(images)
       
     images_1 = images[:rows]
