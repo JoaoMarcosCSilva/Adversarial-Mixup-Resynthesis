@@ -49,11 +49,10 @@ class Autoencoder():
         if epoch != None:
             wandb.log({'Epoch':epoch+1}, commit = False)
         if plot:
-            images = visualize.get_wandb_images(self, 5, 5, plot_data, seed)
-            wandb.log({'Examples': images}, commit = False)
-        
+            figure = visualize.get_wandb_plot(self, 5, 5, plot_data, seed)
+            wandb.log({'Plot': figure}, commit = False)
         wandb.log(metrics_dict)
-        plt.close()
+        
         
     def get_progress_bar(self, dataset):
         return keras.utils.Progbar(int(tf.data.experimental.cardinality(dataset)) - 1)

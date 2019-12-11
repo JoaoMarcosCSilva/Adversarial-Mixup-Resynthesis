@@ -3,28 +3,47 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import wandb
 
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+
 from lib.mixup import interpolate
 
-
-
-def get_wandb_images(Autoencoder, rows, columns, data, seed = 1):
-  if seed != None:
-    np.random.seed(seed)
-
-  images = data[np.random.choice(range(len(data)), size = rows*2, replace = False)]  
-  codes = Autoencoder.Encoder(images)
-  
-  code_shape = tuple(tf.shape(codes)[1:].numpy())
-  to_be_decoded = np.zeros((rows*columns,) + code_shape)
-  
-  for row in range(rows):
-    for column in range(columns):
-        to_be_decoded[row*columns + column] = interpolate(codes[2*row], codes[2*row+1], column/(columns-1))
+def get_wandb_plot(Autoencoder, rows, columns, dataset, seed = -1):
+    if seed != -1:
+        np.random.seed(seed)
+    fig = Figure(figsize = (18/12*columns,18/12*(rows+0.1)))
+    ax = fig.subplots(rows, columns)
+    
+    add_title = Autoencoder.Discriminator is not None
+    
+    images = dataset[np.random.choice(range(len(data)), size = rows*2, replace = False)]  
+    codes = Autoencoder.Encoder(images)
       
-  decoded_images = Autoencoder.Decoder(to_be_decoded).numpy()
-  return [wandb.Image(im) for im in decoded_images]
+    images_1 = images[:rows]
+    images_2 = images[rows:]
+    codes_1 = codes[:rows]
+    codes_2 = codes[rows:]
+    
+    for row in range(rows):
+        for column in range(columns):
+            if column == 0:
+                if add_title:
+                    ax[row][column].set_title(Discriminator(images_1[row:row+1]))
+                ax[row][column].imshow(images_1[row])
+            elif column == columns - 1:
+                if add_title:
+                    ax[row][column].set_title(Discriminator(images_2[row:row+1]))
+                ax[row][column].imshow(images_2[row])
+            else:
+                alpha = column/(columns+1)                
+                code = interpolated(codes_1, codes_2, alpha)
+                image = Decoder(tf.reshape(code, (1,) + tf.shape(code)))
+                if add_title:
+                    ax[row][column].set_title(Discriminator(image))
+                ax[row][column].imshow(image[0])
+      
+    return fig
   
-
 
 def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True):
   if plot:
