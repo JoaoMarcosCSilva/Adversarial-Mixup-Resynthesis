@@ -18,11 +18,12 @@ def get_wandb_images(Autoencoder, rows, columns, data, seed = 1):
   
   for row in range(rows):
     for column in range(columns):
-        to_be_decoded[row*columns + column] = interpolate(codes[row], codes[-row+1], column/(columns-1))
+        to_be_decoded[row*columns + column] = interpolate(codes[2*row], codes[2*row+1], column/(columns-1))
       
   decoded_images = Autoencoder.Decoder(to_be_decoded).numpy()
-  return decoded_images
+  return [wandb.Image(im) for im in decoded_images]
   
+
 
 def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True):
   if plot:

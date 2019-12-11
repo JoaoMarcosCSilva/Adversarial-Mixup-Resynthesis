@@ -50,7 +50,7 @@ class Autoencoder():
             wandb.log({'Epoch':epoch+1}, commit = False)
         if plot:
             images = visualize.get_wandb_images(self, 5, 5, plot_data, seed)
-            output_dict['Plot'] = plt
+            output_dict['Examples'] = images
         
         wandb.log(metrics_dict)
         plt.close()
