@@ -1,11 +1,33 @@
 import numpy as np
-from lib.mixup import interpolate
+import tensorflow as tf
 import matplotlib.pyplot as plt
+
+from lib.mixup import interpolate
+
+
+
+def get_wandb_images(Autoencoder, rows, columns, data, seed = 1):
+  if seed != None:
+    np.random.seed(seed)
+
+  images = data[np.random.choice(range(len(data)), size = rows*2, replace = False)]  
+  codes = Autoencoder.Encoder(images)
+  
+  code_shape = tuple(tf.shape(codes)[1:].numpy())
+  to_be_decoded = np.zeros((rows*columns,) + code_shape)
+  
+  for row in range(rows):
+    for column in range(columns):
+        to_be_decoded[row*columns + column] = interpolate(codes[row], codes[-row+1], column/(columns-1))
+      
+  decoded_images = Autoencoder.Decoder(to_be_decoded).numpy()
+  return decoded_images
+  
 
 def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True):
   if plot:
     plt.ion()
-  ekse:
+  else:
     plt.ioff()
     
   if seed != -1:

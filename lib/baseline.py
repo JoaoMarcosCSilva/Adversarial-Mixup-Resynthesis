@@ -45,15 +45,16 @@ class Autoencoder():
         return 
     
     def wandb_step(self, metrics_dict, epoch = None, plot = False, plot_data = None, seed = 1):
-        output_dict = {}
+        
         if epoch != None:
-            output_dict['Epoch'] = epoch+1
+            wandb.log({'Epoch':epoch+1}, commit = False)
         if plot:
-            visualize.get_output_image(self, 5, 5, plot_data, seed)
+            images = visualize.get_wandb_images(self, 5, 5, plot_data, seed)
             output_dict['Plot'] = plt
         
-        wandb.log({**output_dict, **metrics_dict})
-    
+        wandb.log(metrics_dict)
+        plt.close()
+        
     def get_progress_bar(self, dataset):
         return keras.utils.Progbar(int(tf.data.experimental.cardinality(dataset)) - 1)
 
