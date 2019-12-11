@@ -17,7 +17,7 @@ def get_wandb_plot(Autoencoder, rows, columns, dataset, seed = -1):
     add_title = Autoencoder.Discriminator is not None
     
     images = dataset[np.random.choice(range(len(dataset)), size = rows*2, replace = False)]  
-    codes = Autoencoder.Encoder(images)
+    codes = Autoencoder.Encoder.predict(images)
       
     images_1 = images[:rows]
     images_2 = images[rows:]
@@ -28,18 +28,18 @@ def get_wandb_plot(Autoencoder, rows, columns, dataset, seed = -1):
         for column in range(columns):
             if column == 0:
                 if add_title:
-                    ax[row][column].set_title(Autoencoder.Discriminator(images_1[row:row+1]))
+                    ax[row][column].set_title(Autoencoder.Discriminator.predict(images_1[row:row+1]))
                 ax[row][column].imshow(images_1[row])
             elif column == columns - 1:
                 if add_title:
-                    ax[row][column].set_title(Autoencoder.Discriminator(images_2[row:row+1]))
+                    ax[row][column].set_title(Autoencoder.Discriminator.predict(images_2[row:row+1]))
                 ax[row][column].imshow(images_2[row])
             else:
                 alpha = column/(columns+1)                
                 code = interpolated(codes_1, codes_2, alpha)
-                image = Autoencoder.Decoder(tf.reshape(code, (1,) + tf.shape(code)))
+                image = Autoencoder.Decoder.predict(tf.reshape(code, (1,) + tf.shape(code)))
                 if add_title:
-                    ax[row][column].set_title(Autoencoder.Discriminator(image))
+                    ax[row][column].set_title(Autoencoder.Discriminator.predict(image))
                 ax[row][column].imshow(image[0])
       
     return fig
