@@ -45,7 +45,7 @@ def get_wandb_plot(Autoencoder, rows, columns, dataset, seed = -1):
     return fig
   
 
-def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True):
+def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True, interpolate_images = False):
   if plot:
     plt.ion()
   else:
@@ -59,9 +59,14 @@ def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True):
   for count in range(rows):
     i = np.random.randint(0,len(data))
     j = np.random.randint(0,len(data))
+    
+    
 
-    code1 = Autoencoder.Encoder.predict((data[i:i+1]))
-    code2 = Autoencoder.Encoder.predict((data[j:j+1]))
+    code1 = Autoencoder.Encoder.predict(data[i:i+1])
+    code2 = Autoencoder.Encoder.predict(data[j:j+1])
+    
+    image1 = Autoencoder.Decoder.predict(code1)
+    image2 = Autoencoder.Decoder.predict(code2)
 
     plt.subplot(rows,columns,count*columns + 1)
     if Autoencoder.Discriminator != None:
@@ -71,9 +76,12 @@ def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True):
     for im in range (columns-2):
       t = im/(columns-3)
       plt.subplot(rows,columns,count*columns+im+2)
-
-      code = interpolate(code1, code2, t)
-      image = Autoencoder.Decoder.predict(code)[0]
+      
+      if interpolate_images:
+        image = interpolate(image1, image2, t)[0]
+      else:
+        code = interpolate(code1, code2, t)
+        image = Autoencoder.Decoder.predict(code)[0]
       
       if Autoencoder.Discriminator != None:
         plt.title(Autoencoder.Discriminator.predict(image.reshape(1,64,64,3))[0])
