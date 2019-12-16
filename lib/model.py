@@ -2,37 +2,8 @@ from tensorflow import keras
 from tensorflow.keras.layers import Conv2D, Input, BatchNormalization, Flatten, Dense, MaxPooling2D, UpSampling2D
 import tensorflow as tf
 from lib import losses
-
-class Autoencoder_Object():
-    def __init__(self, Layers, Hidden_Channels, Starting_Channels, lr = 0.001):
-        self.Encoder, self.Decoder, self.Model = get_Model(Layers, Hidden_Channels, Starting_Channels)
-        self.Optimizedr = keras.optimizers.Adam(lr)
-
-    def encode(self,x):
-        return self.Encoder(x)
-    def decode(self,x):
-        return self.Decoder(x)
-    def autoencode(self,x):
-        return self.Model(x)
-
-    def loss(self,y_true, y_pred):
-        return losses.reconstruction_loss(y_true, y_pred)
-    
-    def evaluate(self, dataset):
-        l = 0
-        for step, batch in enumerate(dataset):
-            l += self.loss(batch, autoencode(batch))
-        return l/(step+1)
-
-class Discriminator_Object():
-    def __init__(self,Layers, Starting_Channels, lr = 0.001):
-        self.Discriminator = get_Discriminator(Layers, Starting_Channels)
-        self.Optimizer = keras.optimizers.Adam(lr)
-    def discriminate(self, x):
-        return self.Discriminator(x)
-
-    def loss(self, y_true, y_pred):
-        return losses.discriminator_loss(y_true, y_pred)
+from lib.SpectralNormalizationKeras import SpectralNormalization as SN
+import tensorflow_addons as tfa
 
 def get_Encoder(Layers, Hidden_Channels, Starting_Channels):
     
@@ -57,13 +28,17 @@ def get_Encoder(Layers, Hidden_Channels, Starting_Channels):
     Encoder = keras.Model(inputs, x)
 
     return Encoder
-def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels):
+
+def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm = False):
 
     inputs = Input(shape = (Hidden_Shape))
     x = inputs
     
     x = Conv2D(Hidden_Shape[-1]*2, 3, activation = 'relu', padding = 'same')(x)
-    x = BatchNormalization()(x)
+    if instance_norm:
+        x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+    else:
+        x = BatchNormalization()(x)
     
     channels = int(Encoder_Starting_Channels / (2**(Layers-1)))
 
@@ -72,9 +47,15 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels):
 
         x = UpSampling2D()(x)
         x = Conv2D(channels, 3, activation = 'relu', padding = 'same')(x)
-        x = BatchNormalization()(x)
+        if instance_norm:
+            x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+        else:
+            x = BatchNormalization()(x)
         x = Conv2D(channels, 3, activation = 'relu', padding = 'same')(x)
-        x = BatchNormalization()(x)
+        if instance_norm:
+            x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+        else:
+            x = BatchNormalization()(x)
 
     x = Conv2D(3, 3, activation = 'sigmoid', padding = 'same') (x)
 
@@ -92,12 +73,16 @@ def get_Model (Layers, Hidden_Channels, Starting_Channels):
 
     Model = keras.Model(inputs, x)
     return Encoder, Decoder, Model
-def get_Discriminator(Layers, Starting_Channels):
+
+def get_Discriminator(Layers, Starting_Channels, spectral_norm = False):
     inputs = Input(shape = (64,64,3))
     x = inputs
     for l in range(Layers-2):
-        x = Conv2D(Starting_Channels*(2**l), 3, activation = 'relu', padding = 'same')(x)
-        x = BatchNormalization()(x)
+        if spectral_norm:
+            x = SN(Conv2D(Starting_Channels*(2**l), 3, activation = 'relu', padding = 'same'))(x)
+        else:
+            x = Conv2D(Starting_Channels*(2**l), 3, activation = 'relu', padding = 'same')(x)
+            x = BatchNormalization()(x)
         x = MaxPooling2D()(x)
     x = Flatten()(x)
     x = Dense(10,activation='relu')(x)
