@@ -62,10 +62,10 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm =
     Decoder = keras.Model(inputs, x)
 
     return Decoder
-def get_Model (Layers, Hidden_Channels, Starting_Channels):
+def get_Model (Layers, Hidden_Channels, Starting_Channels, instance_norm = False):
     inputs = Input(shape = (64,64,3))
     Encoder = get_Encoder(Layers, Hidden_Channels, Starting_Channels)
-    Decoder = get_Decoder(Layers, Encoder.output_shape[1:], Starting_Channels)
+    Decoder = get_Decoder(Layers, Encoder.output_shape[1:], Starting_Channels, instance_norm)
 
     x = inputs
     x = Encoder(x)
