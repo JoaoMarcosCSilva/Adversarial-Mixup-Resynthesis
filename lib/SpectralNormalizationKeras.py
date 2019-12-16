@@ -1,5 +1,5 @@
-// This code was written by 張修齊
-// Check the original post in https://medium.com/@FloydHsiu0618/spectral-normalization-implementation-of-tensorflow-2-0-keras-api-d9060d26de77
+# This code was written by 張修齊
+# Check the original post in https://medium.com/@FloydHsiu0618/spectral-normalization-implementation-of-tensorflow-2-0-keras-api-d9060d26de77
 
 import tensorflow as tf
 from tensorflow.keras.layers import Wrapper
