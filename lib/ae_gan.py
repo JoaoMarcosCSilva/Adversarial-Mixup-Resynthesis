@@ -36,11 +36,12 @@ class Autoencoder(baseline.Autoencoder):
         self.Discriminator_Optimizer.apply_gradients(zip(gradients, self.Discriminator.trainable_variables))
         return loss, gradients, loss_real, loss_fake
     
-    def train(self, epochs, dataset, verbose = 1, log_wandb = 0, wandb_every = 1, disc_every = 1):
+    def train(self, epochs, dataset, verbose = 1, log_wandb = 0, plot_data = None, wandb_every = 1, disc_every = 1):
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
                 progress_bar = self.get_progress_bar(dataset)
+
             for step, batch in enumerate(dataset):
                 loss_ae, gradients_ae, loss_reconstruction_ae, loss_discrimination_ae = self.autoencoder_train_step(batch)
                 
@@ -58,7 +59,7 @@ class Autoencoder(baseline.Autoencoder):
 
                 if log_wandb:
                     if step % wandb_every == 0:
-                        self.wandb_step(metrics_dict, epoch)
+                        self.wandb_step(metrics_dict, epoch, plot = plot_data is not None, plot_data = plot_data)
 
                 if verbose == 1:
                     self.progress_bar_step(progress_bar, step, metrics_dict, ['Autoencoder Loss','Discriminator Loss', 'Autoencoder Reconstruction Loss'])

@@ -45,7 +45,6 @@ class Autoencoder():
         return 
     
     def wandb_step(self, metrics_dict, epoch = None, plot = False, plot_data = None, seed = 1):
-        
         if epoch != None:
             wandb.log({'Epoch':epoch+1}, commit = False)
         if plot:
@@ -77,7 +76,7 @@ class Autoencoder():
                 metrics_dict = {'Autoencoder Reconstruction Loss':autoencoder_loss.numpy(),
                                 'Autoencoder Mean Gradient':np.mean([np.mean(i.numpy()) for i in autoencoder_gradients])}
                 if log_wandb:
-                    self.wandb_step(metrics_dict, epoch, plot = True, plot_data = plot_data)
+                    self.wandb_step(metrics_dict, epoch, plot = plot_data is not None, plot_data = plot_data)
                 
                 if verbose:
                     self.progress_bar_step(progress_bar, step, metrics_dict)
