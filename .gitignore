@@ -3,3 +3,5 @@ Data
 lib/__pycache__
 .ipynb_checkpoints/
 wandb/
+.vscode/
+Pokemon_AMR.ipynb
