@@ -27,7 +27,7 @@ class Autoencoder():
     def evaluate(self, dataset):
         l = 0
         for step, batch in enumerate(dataset):
-            l += self.loss(batch, autoencode(batch))
+            l += self.autoencoder_loss(batch, self.Autoencoder(batch))
         return l/(step+1)
     
     @tf.function
