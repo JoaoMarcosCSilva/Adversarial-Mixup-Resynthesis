@@ -20,7 +20,7 @@ class SpectralNormalization(layers.Wrapper):
     """
 
     def __init__(self, layer, **kwargs):
-        super(SpectralNormalization, self).__init__(layer, **kwargs)
+        super().__init__(layer, **kwargs)
 
     def build(self, input_shape):
         """Build `Layer`"""
@@ -42,12 +42,12 @@ class SpectralNormalization(layers.Wrapper):
                 trainable=False,
                 dtype=dtypes.float32)
 
-        super(SpectralNormalization, self).build()
+        super().build()
 
     @def_function.function
     def call(self, inputs, training=None):
         """Call `Layer`"""
-        if training==None:
+        if training is None:
             training = K.learning_phase()
         
         if training==True:
