@@ -36,33 +36,44 @@ class Autoencoder(baseline.Autoencoder):
         self.Discriminator_Optimizer.apply_gradients(zip(gradients, self.Discriminator.trainable_variables))
         return loss, gradients, loss_real, loss_fake
     
-    def train(self, epochs, dataset, verbose = 1, log_wandb = 0, plot_data = None, wandb_every = 1, disc_every = 1):
+    def train(self, epochs, dataset, verbose = 1, log_wandb = 0, plot_data = None, disc_steps = 1, gen_steps = 1):
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
-                progress_bar = self.get_progress_bar(dataset)
-
+                progress_bar = self.get_progress_bar(dataset, disc_steps + gen_steps)
             for step, batch in enumerate(dataset):
-                loss_ae, gradients_ae, loss_reconstruction_ae, loss_discrimination_ae = self.autoencoder_train_step(batch)
-                
-                if step % disc_every == 0:
-                    loss_disc, gradients_disc, loss_real_disc, loss_fake_disc = self.discriminator_train_step(batch)
-                
-                metrics_dict = {'Autoencoder Loss': loss_ae.numpy(), 
-                            'Autoencoder Mean Gradient': np.mean([np.mean(i.numpy()) for i in gradients_ae]), 
-                            'Autoencoder Reconstruction Loss': loss_reconstruction_ae.numpy(),
-                            'Autoencoder Discrimination Loss': loss_discrimination_ae.numpy(),
-                            'Discriminator Loss': loss_disc.numpy(), 
-                            'Discriminator Mean Gradient': np.mean([np.mean(i.numpy()) for i in gradients_disc]),
-                            'Discriminator Real Loss': loss_real_disc.numpy(),
-                            'Discriminator Fake Loss': loss_fake_disc.numpy()}
+                if step % (disc_steps + gen_steps) == 0:
+                    loss_disc, gradients_disc, loss_real_disc, loss_fake_disc = 0, 0, 0, 0
+                    loss_ae, gradients_ae, loss_reconstruction_ae, loss_discrimination_ae = 0, 0, 0, 0
+                if step % (disc_steps + gen_steps) < disc_steps:
+                    loss_, gradients_, loss_real_, loss_fake_ = self.discriminator_train_step(batch)
+                    loss_disc += loss_.numpy()
+                    gradients_disc += np.mean([np.mean(i.numpy()) for i in gradients_])
+                    loss_real_disc += loss_real_.numpy()
+                    loss_fake_disc += loss_fake_.numpy()
+                else:
+                    loss_, gradients_, loss_reconstruction_, loss_discrimination_ = self.autoencoder_train_step(batch)
+                    loss_ae += loss_.numpy()
+                    gradients_ae += np.mean([np.mean(i.numpy()) for i in gradients_])
+                    loss_reconstruction_ae += loss_reconstruction_.numpy()
+                    loss_discrimination_ae += loss_discrimination_.numpy()
+                if (step + 1) % (disc_steps + gen_steps) == 0:
+                    metrics_dict = {'Autoencoder Loss': loss_ae, 
+                            'Autoencoder Mean Gradient': gradients_ae, 
+                            'Autoencoder Reconstruction Loss': loss_reconstruction_ae,
+                            'Autoencoder Discrimination Loss': loss_discrimination_ae,
+                            'Discriminator Loss': loss_disc, 
+                            'Discriminator Mean Gradient': gradients_disc,
+                            'Discriminator Real Loss': loss_real_disc,
+                            'Discriminator Fake Loss': loss_fake_disc}
+                    for key in metrics_dict:
+                        metrics_dict[key] /= (disc_steps + gen_steps)
 
-                if log_wandb:
-                    if step % wandb_every == 0:
+                    if log_wandb:
                         self.wandb_step(metrics_dict, epoch, plot = plot_data is not None, plot_data = plot_data)
 
-                if verbose == 1:
-                    self.progress_bar_step(progress_bar, step, metrics_dict, ['Autoencoder Loss','Discriminator Loss', 'Autoencoder Reconstruction Loss'])
-                if verbose == 2:
-                    self.progress_bar_step(progress_bar, step, metrics_dict)
+                    if verbose == 1:
+                        self.progress_bar_step(progress_bar, step//(disc_steps + gen_steps), metrics_dict, ['Autoencoder Loss','Discriminator Loss', 'Autoencoder Reconstruction Loss'])
+                    if verbose == 2:
+                        self.progress_bar_step(progress_bar, step//(disc_steps + gen_steps), metrics_dict)
                 
