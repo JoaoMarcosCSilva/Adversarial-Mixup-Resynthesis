@@ -54,12 +54,18 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm =
         x = UpSampling2D()(x)
         x = Conv2D(channels, 3, activation = activation, padding = 'same')(x)
         if instance_norm:
-            x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+            try:
+                x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+            except:
+                x = BatchNormalization()(x)
         else:
             x = BatchNormalization()(x)
         x = Conv2D(channels, 3, activation = activation, padding = 'same')(x)
         if instance_norm:
-            x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+            try:
+                x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+            except:
+                x = BatchNormalization()(x)
         else:
             x = BatchNormalization()(x)
 

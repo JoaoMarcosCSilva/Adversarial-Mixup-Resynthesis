@@ -15,7 +15,7 @@ class Autoencoder(baseline.Autoencoder):
             x_pred = self.Autoencoder(batch)
             disc_pred = self.Discriminator(x_pred)
             loss_reconstruction = self.autoencoder_loss(batch, x_pred) 
-            loss_discrimination = self.discriminator_loss(tf.ones(tf.shape(disc_pred)), disc_pred)
+            loss_discrimination = -1 * tf.reduce_mean(tf.math.log(disc_pred) + 1e-7)
             loss = self.Lambda*loss_reconstruction + loss_discrimination
             
         gradients = tape.gradient(loss, self.Autoencoder.trainable_variables)
