@@ -91,5 +91,5 @@ def get_output_image(Autoencoder, rows, columns, data, seed = -1, plot = True, i
     if Autoencoder.Discriminator != None:
       plt.title(Autoencoder.Discriminator.predict(data[j:j+1]))
     plt.imshow(data[j])
-
+  plt.show()
 
