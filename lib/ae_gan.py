@@ -36,16 +36,16 @@ class Autoencoder(baseline.Autoencoder):
         self.Discriminator_Optimizer.apply_gradients(zip(gradients, self.Discriminator.trainable_variables))
         return loss, gradients, loss_real, loss_fake
     
-    def train(self, epochs, dataset, verbose = 1, log_wandb = 0, plot_data = None, disc_steps = 1, gen_steps = 1):
+    def train(self, epochs, dataset, verbose = 1, log_wandb = 0, plot_data = None, disc_steps = 1, ae_steps = 1):
         for epoch in range(epochs):
             if verbose:
                 print('Epoch:',epoch+1)
-                progress_bar = self.get_progress_bar(dataset, disc_steps + gen_steps)
+                progress_bar = self.get_progress_bar(dataset, disc_steps + ae_steps)
             for step, batch in enumerate(dataset):
-                if step % (disc_steps + gen_steps) == 0:
+                if step % (disc_steps + ae_steps) == 0:
                     loss_disc, gradients_disc, loss_real_disc, loss_fake_disc = 0, 0, 0, 0
                     loss_ae, gradients_ae, loss_reconstruction_ae, loss_discrimination_ae = 0, 0, 0, 0
-                if step % (disc_steps + gen_steps) < disc_steps:
+                if step % (disc_steps + ae_steps) < disc_steps:
                     loss_, gradients_, loss_real_, loss_fake_ = self.discriminator_train_step(batch)
                     loss_disc += loss_.numpy()
                     gradients_disc += np.mean([np.mean(i.numpy()) for i in gradients_])
@@ -57,23 +57,21 @@ class Autoencoder(baseline.Autoencoder):
                     gradients_ae += np.mean([np.mean(i.numpy()) for i in gradients_])
                     loss_reconstruction_ae += loss_reconstruction_.numpy()
                     loss_discrimination_ae += loss_discrimination_.numpy()
-                if (step + 1) % (disc_steps + gen_steps) == 0:
-                    metrics_dict = {'Autoencoder Loss': loss_ae, 
-                            'Autoencoder Mean Gradient': gradients_ae, 
-                            'Autoencoder Reconstruction Loss': loss_reconstruction_ae,
-                            'Autoencoder Discrimination Loss': loss_discrimination_ae,
-                            'Discriminator Loss': loss_disc, 
-                            'Discriminator Mean Gradient': gradients_disc,
-                            'Discriminator Real Loss': loss_real_disc,
-                            'Discriminator Fake Loss': loss_fake_disc}
-                    for key in metrics_dict:
-                        metrics_dict[key] /= (disc_steps + gen_steps)
-
+                if (step + 1) % (disc_steps + ae_steps) == 0:
+                    metrics_dict = {'Autoencoder Loss': loss_ae / ae_steps, 
+                            'Autoencoder Mean Gradient': gradients_ae / ae_steps,
+                            'Autoencoder Reconstruction Loss': loss_reconstruction_ae / ae_steps,
+                            'Autoencoder Discrimination Loss': loss_discrimination_ae / ae_steps,
+                            'Discriminator Loss': loss_disc / disc_steps, 
+                            'Discriminator Mean Gradient': gradients_disc / disc_steps,
+                            'Discriminator Real Loss': loss_real_disc / disc_steps,
+                            'Discriminator Fake Loss': loss_fake_disc / disc_steps}
+                    
                     if log_wandb:
                         self.wandb_step(metrics_dict, epoch, plot = plot_data is not None, plot_data = plot_data)
 
                     if verbose == 1:
-                        self.progress_bar_step(progress_bar, step//(disc_steps + gen_steps), metrics_dict, ['Autoencoder Loss','Discriminator Loss', 'Autoencoder Reconstruction Loss'])
+                        self.progress_bar_step(progress_bar, step//(disc_steps + ae_steps), metrics_dict, ['Autoencoder Loss','Discriminator Loss', 'Autoencoder Reconstruction Loss'])
                     if verbose == 2:
-                        self.progress_bar_step(progress_bar, step//(disc_steps + gen_steps), metrics_dict)
+                        self.progress_bar_step(progress_bar, step//(disc_steps + ae_steps), metrics_dict)
                 
