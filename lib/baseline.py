@@ -53,7 +53,7 @@ class Autoencoder():
         wandb.log(metrics_dict)
         
         
-    def get_progress_bar(self, dataset, steps_per_update = 2):
+    def get_progress_bar(self, dataset, steps_per_update = 1):
         return keras.utils.Progbar(int(tf.data.experimental.cardinality(dataset))//steps_per_update - 1)
 
     def progress_bar_step(self, progress_bar, step, dict, subset = None):
