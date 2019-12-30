@@ -55,7 +55,7 @@ def augment_data (data, multiplier):
     augmented_data = data
 
     for i in datagen.flow(data, batch_size=len(data)):
-        augmented_data = np.concatenate(augmented_data, i)
+        augmented_data = np.concatenate((augmented_data, i))
         break
     
     return augmented_data
