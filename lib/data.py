@@ -29,10 +29,10 @@ def download_data (filepath):
     kaggle.api.authenticate()
     kaggle.api.dataset_download_files('brilja/pokemon-mugshots-from-super-mystery-dungeon',path = 'Data', unzip=True)
 
-def load_data ():
+def load_data (glob_content = 'Data/smd/**/*.png'):
     images = []
 
-    for im_path in glob.glob("Data/smd/*.png"):
+    for im_path in glob.glob(glob_content, recursive = True):
         images.append(imageio.imread(im_path))
     images = np.array(images)
 
