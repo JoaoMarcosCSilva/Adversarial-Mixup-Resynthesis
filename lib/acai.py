@@ -20,7 +20,7 @@ class Autoencoder(baseline.Autoencoder):
         result = self.Decoder(codeI)
         return result, tf.reshape(t*2, (-1,1))
 
-    #@tf.function
+    @tf.function
     def autoencoder_train_step(self, batch):
         with tf.GradientTape() as tape:
             x_true = batch
