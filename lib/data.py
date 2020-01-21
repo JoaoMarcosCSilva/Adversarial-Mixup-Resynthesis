@@ -7,6 +7,10 @@ from tensorflow import keras
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 import json
+import tqdm
+import requests
+import zipfile
+from tqdm.autonotebook import tqdm
 
 def get_kaggle_json_dict(filepath):
     file = open(filepath)
@@ -15,7 +19,24 @@ def get_kaggle_json_dict(filepath):
     return kaggle_json
     
 
-def download_data (filepath):
+def download_shoes_data():
+    url = 'http://vision.cs.utexas.edu/projects/finegrained/utzap50k/ut-zap50k-images-square.zip'
+    myfile = requests.get(url)
+    open('Data/shoes.zip', 'wb').write(myfile.content)
+    with zipfile.ZipFile('Data/shoes.zip', 'r') as zip_ref:
+        zip_ref.extractall('Data/shoes/')
+
+def load_shoes_data():
+    pathfiles = glob.glob('Data/shoes/**/*.jpg', recursive = True)
+    images = []
+    for path in tqdm(pathfiles):
+        im = imageio.imread(path)
+        if im.shape == (136,136,3):
+            images.append(im)
+    x_train, x_test = train_test_split(np.array(images), test_size = 0.1, random_state = 1)
+    return x_train, x_test
+
+def download_pokemon_data (filepath):
     kaggle_json_dict = get_kaggle_json_dict(filepath)
     os.environ['KAGGLE_USERNAME'] = kaggle_json_dict['username'] # username from the json file 
     os.environ['KAGGLE_KEY'] = kaggle_json_dict['key'] # key from the json file
@@ -29,10 +50,10 @@ def download_data (filepath):
     kaggle.api.authenticate()
     kaggle.api.dataset_download_files('brilja/pokemon-mugshots-from-super-mystery-dungeon',path = 'Data', unzip=True)
 
-def load_data (glob_content = 'Data/smd/**/*.png'):
+def load_pokemon_data ():
     images = []
 
-    for im_path in glob.glob(glob_content, recursive = True):
+    for im_path in glob.glob('Data/smd/**/*.png', recursive = True):
         images.append(imageio.imread(im_path))
     images = np.array(images)
 
