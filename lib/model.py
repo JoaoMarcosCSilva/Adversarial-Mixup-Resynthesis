@@ -4,9 +4,8 @@ import tensorflow as tf
 from lib import losses
 from lib.SpectralNormalizationKeras import SpectralNormalization as SN
 
-def get_Encoder(Layers, Hidden_Channels, Starting_Channels, activation = 'relu'):
-    
-    inputs = Input(shape = (64,64,3))
+def get_Encoder(Layers, Hidden_Channels, Starting_Channels, activation = 'relu', input_shape = (64,64,3)):
+    inputs = Input(shape = input_shape)
     x = inputs
 
     channels = Starting_Channels
@@ -28,7 +27,7 @@ def get_Encoder(Layers, Hidden_Channels, Starting_Channels, activation = 'relu')
 
     return Encoder
 
-def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm = False, activation = 'relu'):
+def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm = False, activation = 'relu', input_shape = (64,64,3)):
     if instance_norm:
         try:
             import tensorflow_addons as tfa
@@ -74,10 +73,10 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm =
     Decoder = keras.Model(inputs, x)
 
     return Decoder
-def get_Model (Layers, Hidden_Channels, Starting_Channels, instance_norm = False, activation = 'relu'):
-    inputs = Input(shape = (64,64,3))
-    Encoder = get_Encoder(Layers, Hidden_Channels, Starting_Channels)
-    Decoder = get_Decoder(Layers, Encoder.output_shape[1:], Starting_Channels, instance_norm)
+def get_Model (Layers, Hidden_Channels, Starting_Channels, input_shape = (64,64,3), instance_norm = False, activation = 'relu'):
+    inputs = Input(shape = input_shape)
+    Encoder = get_Encoder(Layers, Hidden_Channels, Starting_Channels, input_shape = input_shape)
+    Decoder = get_Decoder(Layers, Encoder.output_shape[1:], Starting_Channels, instance_norm, input_shape = input_shape)
 
     x = inputs
     x = Encoder(x)
@@ -86,8 +85,8 @@ def get_Model (Layers, Hidden_Channels, Starting_Channels, instance_norm = False
     Model = keras.Model(inputs, x)
     return Encoder, Decoder, Model
     
-def get_Discriminator(Layers, Starting_Channels, spectral_norm = False, activation = 'relu'):
-    inputs = Input(shape = (64,64,3))
+def get_Discriminator(Layers, Starting_Channels, spectral_norm = False, activation = 'relu', input_shape = (64,64,3)):
+    inputs = Input(shape = input_shape)
     x = inputs
     for l in range(Layers-2):
         if spectral_norm:
