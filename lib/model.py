@@ -1,6 +1,5 @@
 from tensorflow import keras
 from tensorflow.keras.layers import Conv2D, Input, BatchNormalization, Flatten, Dense, MaxPooling2D, UpSampling2D
-import tensorflow as tf
 from lib import losses
 from lib.SpectralNormalizationKeras import SpectralNormalization as SN
 
@@ -39,7 +38,7 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm =
     x = Conv2D(Hidden_Shape[-1]*2, 3, activation = activation, padding = 'same')(x)
     if instance_norm:
         try:
-            x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+            x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x)
         except:
             x = BatchNormalization()(x)
     else:
@@ -54,7 +53,7 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm =
         x = Conv2D(channels, 3, activation = activation, padding = 'same')(x)
         if instance_norm:
             try:
-                x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+                x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x)
             except:
                 x = BatchNormalization()(x)
         else:
@@ -62,7 +61,7 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm =
         x = Conv2D(channels, 3, activation = activation, padding = 'same')(x)
         if instance_norm:
             try:
-                x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x),
+                x = tfa.layers.InstanceNormalization(axis=3, center=True, scale=True, beta_initializer="random_uniform", gamma_initializer="random_uniform")(x)
             except:
                 x = BatchNormalization()(x)
         else:
@@ -76,7 +75,7 @@ def get_Decoder(Layers, Hidden_Shape, Encoder_Starting_Channels, instance_norm =
 def get_Model (Layers, Hidden_Channels, Starting_Channels, input_shape = (64,64,3), instance_norm = False, activation = 'relu'):
     inputs = Input(shape = input_shape)
     Encoder = get_Encoder(Layers, Hidden_Channels, Starting_Channels, input_shape = input_shape)
-    Decoder = get_Decoder(Layers, Encoder.output_shape[1:], Starting_Channels, instance_norm, input_shape = input_shape)
+    Decoder = get_Decoder(Layers, Encoder.output_shape[1:], Starting_Channels, instance_norm = instance_norm, input_shape = input_shape)
 
     x = inputs
     x = Encoder(x)
