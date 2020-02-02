@@ -29,7 +29,7 @@ class Autoencoder(baseline.Autoencoder):
             ae_reconstruction_loss = self.autoencoder_loss(batch, x_pred)
             ae_discrimination_loss = -1 * tf.reduce_mean(tf.math.log(disc_pred) + 1e-7)
             ae_mixup_loss = -1 * tf.reduce_mean(tf.math.log(disc_mixup) + 1e-7)
-            ae_consistency_loss = tf.keras.losses.mse(h_mixup, h_consistency)
+            ae_consistency_loss = tf.reduce_mean(tf.keras.losses.mse(h_mixup, h_consistency))
 
             disc_true_loss = self.discriminator_loss(tf.ones_like(disc_true), disc_true)
             disc_fake_loss = self.discriminator_loss(tf.zeros_like(disc_pred), disc_pred)
@@ -86,17 +86,17 @@ class Autoencoder(baseline.Autoencoder):
 
                 
                 
-                metrics_dict = {'Autoencoder Loss': loss_ae, 
+                metrics_dict = {'Autoencoder Loss': loss_ae.numpy(), 
                         'Autoencoder Mean Gradient': gradients_ae,
-                        'Autoencoder Reconstruction Loss': loss_reconstruction_ae,
-                        'Autoencoder Discrimination Loss': loss_discrimination_ae,
-                        'Autoencoder Mixup Loss': loss_mixup_ae,
-                        'Autoencoder Consistency Loss': loss_consistency_ae,
-                        'Discriminator Loss': loss_disc, 
+                        'Autoencoder Reconstruction Loss': loss_reconstruction_ae.numpy(),
+                        'Autoencoder Discrimination Loss': loss_discrimination_ae.numpy(),
+                        'Autoencoder Mixup Loss': loss_mixup_ae.numpy(),
+                        'Autoencoder Consistency Loss': loss_consistency_ae.numpy(),
+                        'Discriminator Loss': loss_disc.numpy(), 
                         'Discriminator Mean Gradient': gradients_disc,
-                        'Discriminator Real Loss': loss_real_disc,
-                        'Discriminator Fake Loss': loss_fake_disc,
-                        'Discriminator Mixup Loss': loss_mixup_disc}
+                        'Discriminator Real Loss': loss_real_disc.numpy(),
+                        'Discriminator Fake Loss': loss_fake_disc.numpy(),
+                        'Discriminator Mixup Loss': loss_mixup_disc.numpy()}
                     
                 if log_wandb:
                     self.wandb_step(metrics_dict, epoch, plot = plot_data is not None, plot_data = plot_data)
