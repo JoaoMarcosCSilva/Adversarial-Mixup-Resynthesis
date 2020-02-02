@@ -5,30 +5,23 @@ import numpy as np
 from lib import baseline, mixup
 
 class Autoencoder(baseline.Autoencoder):
-    def __init__(self, Encoder, Decoder, Discriminator, Lambda, Gamma, Autoencoder_Optimizer = None, Discriminator_Optimizer = None, Mixup = mixup.interpolate):
+    def __init__(self, Encoder, Decoder, Discriminator, Lambda, Gamma, Autoencoder_Optimizer = None, Discriminator_Optimizer = None):
         super().__init__(Encoder, Decoder, Discriminator, Autoencoder_Optimizer, Discriminator_Optimizer)
         self.Lambda = Lambda
         self.Gamma = Gamma
-        self.Mixup = Mixup
-
-    def interpolate_batch(self, batch):
-        length = tf.shape(batch)[0]
-        t = tf.random.uniform((length,1,1,1), 0, 0.5)
-        code1 = self.Encoder(batch)
-        code2 = code1[::-1]
-        codeI = self.Mixup(code1, code2, t)
-        result = self.Decoder(codeI)
-        return result, tf.reshape(t*2, (-1,1))
 
     @tf.function
     def autoencoder_train_step(self, batch):
         with tf.GradientTape() as tape:
             x_true = batch
-            x_pred = self.Autoencoder(batch)
+            h_pred = self.Encoder(batch)
+            x_pred = self.Decoder(h_pred)
             
             loss_reconstruction = self.autoencoder_loss(batch, x_pred) 
+            
+            h_mixup, t = mixup.linear(h_pred)
+            mixbatch = self.Decoder(h_mixup)
 
-            mixbatch, t = self.interpolate_batch(batch)
             disc_pred = self.Discriminator(mixbatch)
             loss_discrimination = tf.reduce_mean(tf.square(disc_pred))
 
@@ -41,8 +34,10 @@ class Autoencoder(baseline.Autoencoder):
     @tf.function
     def discriminator_train_step(self, batch):
         with tf.GradientTape() as tape:
-            mixbatch, t = self.interpolate_batch(batch)
-            pred_batch = self.Autoencoder(batch)
+            h_pred = self.Encoder(batch)
+            pred_batch = self.Decoder(h_pred)
+            h_mixup, t = mixup.linear(h_pred)
+            mixbatch = self.Decoder(h_pred)
 
             disc_pred_real = self.Discriminator(mixup.interpolate(batch, pred_batch, self.Gamma))
             disc_pred_fake = self.Discriminator(mixbatch)
