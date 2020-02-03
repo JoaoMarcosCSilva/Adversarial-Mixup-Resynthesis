@@ -5,10 +5,11 @@ import numpy as np
 from lib import baseline, mixup
 
 class Autoencoder(baseline.Autoencoder):
-    def __init__(self, Encoder, Decoder, Discriminator, Lambda, Gamma, Autoencoder_Optimizer = None, Discriminator_Optimizer = None, Mixup = mixup.interpolate):
+    def __init__(self, Encoder, Decoder, Discriminator, Lambda, Gamma, Theta = 1.0, Autoencoder_Optimizer = None, Discriminator_Optimizer = None, Mixup = mixup.interpolate):
         super().__init__(Encoder, Decoder, Discriminator, Autoencoder_Optimizer, Discriminator_Optimizer)
         self.Lambda = Lambda
         self.Gamma = Gamma
+        self.Theta = Theta
         self.Mixup = Mixup
 
     def interpolate_batch(self, batch):
@@ -50,7 +51,7 @@ class Autoencoder(baseline.Autoencoder):
             loss_real = tf.reduce_mean(keras.losses.mse(tf.zeros(tf.shape(disc_pred_real)), disc_pred_real))
             loss_fake = tf.reduce_mean(keras.losses.mse(t, disc_pred_fake))
 
-            loss = loss_real + loss_fake
+            loss = Theta*loss_real + loss_fake
         gradients = tape.gradient(loss, self.Discriminator.trainable_variables)
         self.Discriminator_Optimizer.apply_gradients(zip(gradients, self.Discriminator.trainable_variables))
         return loss, gradients, loss_real, loss_fake
