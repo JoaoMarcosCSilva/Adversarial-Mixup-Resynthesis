@@ -5,3 +5,4 @@ lib/__pycache__
 wandb/
 .vscode/
 Pokemon_AMR.ipynb
+*.swp
