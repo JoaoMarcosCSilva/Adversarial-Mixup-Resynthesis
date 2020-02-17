@@ -56,8 +56,8 @@ class Autoencoder(baseline.Autoencoder):
             disc_mixup = self.Discriminator(x_mixup)
             
             loss_real = self.discriminator_loss(tf.ones_like(disc_real), disc_real)
-            loss_fake = self.discriminator_loss(tf.ones_like(disc_fake), disc_fake)
-            loss_mixup = self.discriminator_loss(tf.ones_like(disc_mixup), disc_mixup)
+            loss_fake = self.discriminator_loss(tf.zeros_like(disc_fake), disc_fake)
+            loss_mixup = self.discriminator_loss(tf.zeros_like(disc_mixup), disc_mixup)
 
             loss = loss_real + loss_fake + loss_mixup
         gradients = tape.gradient(loss, self.Discriminator.trainable_variables)
