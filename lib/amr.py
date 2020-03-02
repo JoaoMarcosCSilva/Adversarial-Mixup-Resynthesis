@@ -93,10 +93,13 @@ class Autoencoder(baseline.Autoencoder):
                             'Autoencoder Mean Gradient': gradients_ae / ae_steps,
                             'Autoencoder Reconstruction Loss': loss_reconstruction_ae / ae_steps,
                             'Autoencoder Discrimination Loss': loss_discrimination_ae / ae_steps,
+                            'Autoencoder Mixup Loss': loss_mixup_ae / ae_steps,
+                            'Autoencoder Consist Loss': loss_consistency_ae / ae_steps,
                             'Discriminator Loss': loss_disc / disc_steps, 
                             'Discriminator Mean Gradient': gradients_disc / disc_steps,
                             'Discriminator Real Loss': loss_real_disc / disc_steps,
-                            'Discriminator Fake Loss': loss_fake_disc / disc_steps}
+                            'Discriminator Fake Loss': loss_fake_disc / disc_steps,
+                            'Discriminator Mixup Loss': loss_mixup_disc / disc_steps}
                     
                     if log_wandb:
                         self.wandb_step(metrics_dict, epoch, plot = plot_data is not None, plot_data = plot_data)

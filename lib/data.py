@@ -26,14 +26,25 @@ def download_shoes_data():
     with zipfile.ZipFile('Data/shoes.zip', 'r') as zip_ref:
         zip_ref.extractall('Data/shoes/')
 
-def load_shoes_data():
+def load_shoes_data(verbose = 1):
     pathfiles = glob.glob('Data/shoes/**/*.jpg', recursive = True)
     images = []
-    for path in tqdm(pathfiles):
+    
+    if verbose:
+        pathfiles = tqdm(pathfiles)
+    for path in pathfiles:
         im = imageio.imread(path)
         if im.shape == (136,136,3):
             images.append(im)
-    x_train, x_test = train_test_split(np.array(images), test_size = 0.1, random_state = 1)
+
+    images = np.array(images, dtype = np.float32)
+
+    images = images/255
+
+    images = np.float32(images)
+
+    x_train, x_test = train_test_split(images, test_size = 0.1, random_state = 1)
+
     return x_train, x_test
 
 def download_pokemon_data (filepath):
