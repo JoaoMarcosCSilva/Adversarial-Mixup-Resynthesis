@@ -84,7 +84,7 @@ def get_Model (Layers, Hidden_Channels, Starting_Channels, input_shape = (64,64,
     Model = keras.Model(inputs, x)
     return Encoder, Decoder, Model
     
-def get_Discriminator(Layers, Starting_Channels, spectral_norm = False, activation = 'relu', input_shape = (64,64,3)):
+def get_Discriminator(Layers, Starting_Channels, spectral_norm = False, activation = 'relu', input_shape = (64,64,3), apply_sigmoid = True):
     inputs = Input(shape = input_shape)
     x = inputs
     for l in range(Layers-2):
@@ -96,7 +96,10 @@ def get_Discriminator(Layers, Starting_Channels, spectral_norm = False, activati
         x = MaxPooling2D()(x)
     x = Flatten()(x)
     x = Dense(10,activation = activation)(x)
-    x = Dense(1, activation = 'sigmoid')(x)
+    if apply_sigmoid:
+        x = Dense(1, activation = 'sigmoid')(x)
+    else:
+        x = Dense(1(x)
     Discriminator = keras.Model(inputs,x)
     return Discriminator
     
