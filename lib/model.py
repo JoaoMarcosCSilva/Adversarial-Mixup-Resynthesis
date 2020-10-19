@@ -99,7 +99,7 @@ def get_Discriminator(Layers, Starting_Channels, spectral_norm = False, activati
     if apply_sigmoid:
         x = Dense(1, activation = 'sigmoid')(x)
     else:
-        x = Dense(1(x)
+        x = Dense(1)(x)
     Discriminator = keras.Model(inputs,x)
     return Discriminator
     
