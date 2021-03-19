@@ -1,5 +1,5 @@
 # Adversarially-Constrained-Autoencoder-Interpolation
-Replication of the paper by Beckham et al. applied to a pokemon dataset.
+Replication of the paper "Understanding and Improving Interpolation in Autoencoders via an Adversarial Regularizer" by Berthelot et al. applied to a pokemon dataset.
 
 The architecture can do realistic interpolation in images by interpolating in the latent space of an autoencoder instead of in pixel space. 
 
